@@ -10,9 +10,14 @@ from botcity.web.browsers.chrome import default_options
 #atualizar o chromedriver automaticamente
 from webdriver_manager.chrome import ChromeDriverManager
 
+#Importações uteis
 from assets import usuario, senha, mover_arquivos, link
+
+#Criar caixas de dialogo
 import tkinter as tk
 from tkinter import simpledialog
+
+#Biblioteca para escrever arquivo word
 from docx import Document
 from docx.shared import Inches
 
@@ -45,7 +50,6 @@ class Bot(WebBot):
         gerencia = self.find_element('S02', By.ID).text
         data_criacao = self.find_element('S03', By.ID).text     
         self.get_screenshot(filepath=f'{self.setores[i]}.png')  
-        print(f'Solicitante {solicitante}  - Gerencia {gerencia} - Data {data_criacao}')  
          
         p = self.documento.add_paragraph('Solicitantes')
         p = self.documento.add_paragraph(f'Solicitante: {solicitante}')
@@ -53,8 +57,6 @@ class Bot(WebBot):
         p = self.documento.add_paragraph(f'Data de criação: {data_criacao}')
         self.documento.add_picture('Solicitante.png', width=Inches(6.50))
 
-        
-    
     #Extrair informações da guia desenvolvimento
     def extract_info_desenvolvimento(self, i):
         desenvolvedor = self.find_element('D01', By.ID).text         
@@ -63,7 +65,6 @@ class Bot(WebBot):
         fim_desenvolvimento = self.find_element('D04', By.ID).text         
         liberacao_teste = self.find_element('D06', By.ID).text 
         self.get_screenshot(filepath=f'{self.setores[i]}.png')  
-        # print(f'Desenvolvedor {desenvolvedor}  - Gerencia {gerencia} - Data inicio {inicio_desenvolvimento} - Data fim {fim_desenvolvimento} -Liberação pra teste {liberacao_teste} ')
         
         p = self.documento.add_paragraph('Desenvolvimento')
         p = self.documento.add_paragraph(f'Desenvolvedor: {desenvolvedor}')
@@ -73,8 +74,6 @@ class Bot(WebBot):
         p = self.documento.add_paragraph(f'Data de liberação para o teste: {liberacao_teste}')
         self.documento.add_picture('Desenvolvimento.png', width=Inches(6.50))
         
-        
-    
     #Extrair informações da guia testes
     def extract_info_testes(self, i):
         testador = self.find_element('T01', By.ID).text 
@@ -83,7 +82,6 @@ class Bot(WebBot):
         fim_teste = self.find_element('T04', By.ID).text    
         liberacao_homologacao = self.find_element('T06', By.ID).text
         self.get_screenshot(filepath=f'{self.setores[i]}.png')  
-        # print(f'Testador {testador}  - Gerencia {gerencia} - Data inicio {inicio_teste} - Data fim {fim_teste} -Liberação pra homologacao {liberacao_homologacao} ')  
 
             
         p = self.documento.add_paragraph('Teste')
@@ -93,8 +91,7 @@ class Bot(WebBot):
         p = self.documento.add_paragraph(f'Fim do teste: {fim_teste}')
         p = self.documento.add_paragraph(f'Data de liberação para o teste: {liberacao_homologacao}')
         self.documento.add_picture('Teste.png', width=Inches(6.50))
-
-        
+     
     #Extrair informações da guia homologação
     def extract_info_homologacao(self, i):
         homologador = self.find_element('H02', By.ID).text
@@ -103,7 +100,6 @@ class Bot(WebBot):
         aceito_por = self.find_element('H05', By.ID).text
         data_aceitacao = self.find_element('H06', By.ID).text
         self.get_screenshot(filepath=f'{self.setores[i]}.png')  
-        # print(f'Homologador {homologador}  - Gerencia {gerencia} - Homologado em  {data_homologacao} - aceito por {aceito_por} - Data de aceitação {data_aceitacao} ') 
         
         p = self.documento.add_paragraph('Homologação')
         p = self.documento.add_paragraph(f'Homologador: {homologador}')
@@ -112,9 +108,7 @@ class Bot(WebBot):
         p = self.documento.add_paragraph(f'Aceito em: {data_aceitacao}')
         p = self.documento.add_paragraph(f'Aceito por: {aceito_por}')
         self.documento.add_picture('Homologacao.png', width=Inches(6.50))
-        
-      
-
+          
     #Extrair iformações da guia produção
     def extract_info_producao(self, i):
         versao_promovida = self.find_element('P01', By.ID).text
@@ -122,7 +116,6 @@ class Bot(WebBot):
         gerencia = self.find_element('P03', By.ID).text
         data_promocao =  self.find_element('P04', By.ID).text
         self.get_screenshot(filepath=f'{self.setores[i]}.png')  
-        # print(f'Versão {versao_promovida}   - Promovido por  {promovido_por} - Gerencia {gerencia} - Data da promoção {data_promocao} ')
        
         p = self.documento.add_paragraph('Produção')
         p = self.documento.add_paragraph(f'Versão do software: {versao_promovida}')
@@ -131,8 +124,6 @@ class Bot(WebBot):
         p = self.documento.add_paragraph(f'Data de promoção: {data_promocao}')
         self.documento.add_picture('Producao.png', width=Inches(6.50))
         
-        
-
     #Verificar qual a guia correta para cada função
     def extract_info_demand(self):
         abas = ['solic', 'desenv', 'teste', 'homolog', 'prod']
@@ -198,22 +189,28 @@ class Bot(WebBot):
         # Implement here your logic...
         pasta_origem = r'D:\rpa\jornada rpa'
 
+        qtd_demandas = simpledialog.askstring("Input", "Informe a quantidade de demandas a serem executadas:")
+
         self.login(usuario, senha)
 
         root = tk.Tk()
         root.withdraw()
-        demanda = simpledialog.askstring("Input", "Informe o numero da demanda:")
 
+        for i in range(0, int(qtd_demandas)):
+            demanda = simpledialog.askstring("Input", "Informe o numero da demanda:")
 
+            self.search_demand(demanda)
+            self.extract_info_demand()
 
-        self.search_demand(demanda)
-        self.extract_info_demand()
+            self.documento.save(f'{demanda}.docx')
 
-        self.documento.save(f'{demanda}.docx')
+            mover_arquivos(pasta_origem, demanda)
 
-        mover_arquivos(pasta_origem, demanda)
+            self.navigate_to('https://jornadarpa.com.br/demandas/index.html')
 
         # Wait 3 seconds before closing
+        
+
         self.wait(3000)
 
         # Finish and clean up the Web Browser
