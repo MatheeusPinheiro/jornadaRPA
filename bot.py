@@ -13,12 +13,16 @@ from webdriver_manager.chrome import ChromeDriverManager
 from assets import usuario, senha, mover_arquivos, link
 import tkinter as tk
 from tkinter import simpledialog
+from docx import Document
+from docx.shared import Inches
 
 
 class Bot(WebBot):
     
    
     setores = ['Solicitante', 'Desenvolvimento', 'Teste', 'Homologacao', 'Producao']
+
+    documento =  Document()
 
     #login
     def login(self, user, password):
@@ -42,17 +46,14 @@ class Bot(WebBot):
         data_criacao = self.find_element('S03', By.ID).text     
         self.get_screenshot(filepath=f'{self.setores[i]}.png')  
         print(f'Solicitante {solicitante}  - Gerencia {gerencia} - Data {data_criacao}')  
+         
+        p = self.documento.add_paragraph('Solicitantes')
+        p = self.documento.add_paragraph(f'Solicitante: {solicitante}')
+        p = self.documento.add_paragraph(f'Gerencia do solicitante: {gerencia}')
+        p = self.documento.add_paragraph(f'Data de criação: {data_criacao}')
+        self.documento.add_picture('Solicitante.png', width=Inches(6.50))
 
-        with open('relatorio.txt', 'w') as arquivo:
-            arquivo.write('Relatório extração de informações da pagina')
-            arquivo.write('Informações sobre o Solicitante')
-            menssagem = f'''
-                        Solicitante:  {solicitante}
-                        Gerência do solicitante: {gerencia}
-                        Data da criação: {data_criacao} 
-
-                        '''
-            arquivo.write(menssagem)
+        
     
     #Extrair informações da guia desenvolvimento
     def extract_info_desenvolvimento(self, i):
@@ -62,19 +63,17 @@ class Bot(WebBot):
         fim_desenvolvimento = self.find_element('D04', By.ID).text         
         liberacao_teste = self.find_element('D06', By.ID).text 
         self.get_screenshot(filepath=f'{self.setores[i]}.png')  
-        print(f'Desenvolvedor {desenvolvedor}  - Gerencia {gerencia} - Data inicio {inicio_desenvolvimento} - Data fim {fim_desenvolvimento} -Liberação pra teste {liberacao_teste} ')
+        # print(f'Desenvolvedor {desenvolvedor}  - Gerencia {gerencia} - Data inicio {inicio_desenvolvimento} - Data fim {fim_desenvolvimento} -Liberação pra teste {liberacao_teste} ')
         
-        with open('relatorio.txt', 'a') as arquivo:
-            arquivo.write('Informações sobre o Desenvolvimento')
-            menssagem = f'''
-                    Desenvolvedor:  {desenvolvedor}
-                    Gerência do desenvolvedor: {gerencia}
-                    Inicio do desenvolvimento: {inicio_desenvolvimento}
-                    Fim do desenvolvimento: {fim_desenvolvimento}
-                    Data de liberação para o teste: {liberacao_teste}
-
-                    '''
-            arquivo.write(menssagem)  
+        p = self.documento.add_paragraph('Desenvolvimento')
+        p = self.documento.add_paragraph(f'Desenvolvedor: {desenvolvedor}')
+        p = self.documento.add_paragraph(f'Gerencia do desenvolvedor: {gerencia}')
+        p = self.documento.add_paragraph(f'Inicio do desenvolvimento: {inicio_desenvolvimento}')
+        p = self.documento.add_paragraph(f'Fim do desenvolvimento: {fim_desenvolvimento}')
+        p = self.documento.add_paragraph(f'Data de liberação para o teste: {liberacao_teste}')
+        self.documento.add_picture('Desenvolvimento.png', width=Inches(6.50))
+        
+        
     
     #Extrair informações da guia testes
     def extract_info_testes(self, i):
@@ -84,20 +83,18 @@ class Bot(WebBot):
         fim_teste = self.find_element('T04', By.ID).text    
         liberacao_homologacao = self.find_element('T06', By.ID).text
         self.get_screenshot(filepath=f'{self.setores[i]}.png')  
-        print(f'Testador {testador}  - Gerencia {gerencia} - Data inicio {inicio_teste} - Data fim {fim_teste} -Liberação pra homologacao {liberacao_homologacao} ')  
+        # print(f'Testador {testador}  - Gerencia {gerencia} - Data inicio {inicio_teste} - Data fim {fim_teste} -Liberação pra homologacao {liberacao_homologacao} ')  
 
-        with open('relatorio.txt', 'a') as arquivo:
-            arquivo.write('Informações sobre Testes')
-            menssagem = f'''
-                    Testador:  {testador}
-                    Gerência do testador: {gerencia}
-                    Inicio do teste: {inicio_teste}
-                    Fim do teste: {fim_teste}
-                    Data de liberação para a homologação: {liberacao_homologacao}
+            
+        p = self.documento.add_paragraph('Teste')
+        p = self.documento.add_paragraph(f'Testador: {testador}')
+        p = self.documento.add_paragraph(f'Gerencia do testador: {gerencia}')
+        p = self.documento.add_paragraph(f'Inicio do teste: {inicio_teste}')
+        p = self.documento.add_paragraph(f'Fim do teste: {fim_teste}')
+        p = self.documento.add_paragraph(f'Data de liberação para o teste: {liberacao_homologacao}')
+        self.documento.add_picture('Teste.png', width=Inches(6.50))
 
-                    '''
-            arquivo.write(menssagem)  
-
+        
     #Extrair informações da guia homologação
     def extract_info_homologacao(self, i):
         homologador = self.find_element('H02', By.ID).text
@@ -106,19 +103,17 @@ class Bot(WebBot):
         aceito_por = self.find_element('H05', By.ID).text
         data_aceitacao = self.find_element('H06', By.ID).text
         self.get_screenshot(filepath=f'{self.setores[i]}.png')  
-        print(f'Homologador {homologador}  - Gerencia {gerencia} - Homologado em  {data_homologacao} - aceito por {aceito_por} - Data de aceitação {data_aceitacao} ') 
+        # print(f'Homologador {homologador}  - Gerencia {gerencia} - Homologado em  {data_homologacao} - aceito por {aceito_por} - Data de aceitação {data_aceitacao} ') 
         
-        with open('relatorio.txt', 'a') as arquivo:
-            arquivo.write('Informações sobre Homologação')
-            menssagem = f'''
-                    Homologador:  {homologador}
-                    Gerência do homologador: {gerencia}
-                    Homologado em: {data_homologacao}
-                    Aceito por: {aceito_por}
-                    Aceito em: {data_aceitacao}
-
-                    '''
-            arquivo.write(menssagem)   
+        p = self.documento.add_paragraph('Homologação')
+        p = self.documento.add_paragraph(f'Homologador: {homologador}')
+        p = self.documento.add_paragraph(f'Gerencia do homologador: {gerencia}')
+        p = self.documento.add_paragraph(f'Data de homologação: {data_homologacao}')
+        p = self.documento.add_paragraph(f'Aceito em: {data_aceitacao}')
+        p = self.documento.add_paragraph(f'Aceito por: {aceito_por}')
+        self.documento.add_picture('Homologacao.png', width=Inches(6.50))
+        
+      
 
     #Extrair iformações da guia produção
     def extract_info_producao(self, i):
@@ -127,18 +122,16 @@ class Bot(WebBot):
         gerencia = self.find_element('P03', By.ID).text
         data_promocao =  self.find_element('P04', By.ID).text
         self.get_screenshot(filepath=f'{self.setores[i]}.png')  
-        print(f'Versão {versao_promovida}   - Promovido por  {promovido_por} - Gerencia {gerencia} - Data da promoção {data_promocao} ')
+        # print(f'Versão {versao_promovida}   - Promovido por  {promovido_por} - Gerencia {gerencia} - Data da promoção {data_promocao} ')
+       
+        p = self.documento.add_paragraph('Produção')
+        p = self.documento.add_paragraph(f'Versão do software: {versao_promovida}')
+        p = self.documento.add_paragraph(f'Promovida por: {promovido_por}')
+        p = self.documento.add_paragraph(f'Gerencia: {gerencia}')
+        p = self.documento.add_paragraph(f'Data de promoção: {data_promocao}')
+        self.documento.add_picture('Producao.png', width=Inches(6.50))
         
-        with open('relatorio.txt', 'a') as arquivo:
-            arquivo.write('Informações sobre Produção')
-            menssagem = f'''
-                    Versão promovida:  {versao_promovida}
-                    Promovido por: {promovido_por}
-                    Gerência: {gerencia}
-                    Promovido em: {data_promocao}
-
-                    '''
-            arquivo.write(menssagem)    
+        
 
     #Verificar qual a guia correta para cada função
     def extract_info_demand(self):
@@ -215,6 +208,8 @@ class Bot(WebBot):
 
         self.search_demand(demanda)
         self.extract_info_demand()
+
+        self.documento.save(f'{demanda}.docx')
 
         mover_arquivos(pasta_origem, demanda)
 

@@ -16,7 +16,7 @@ def mover_arquivos(pasta_origem, pasta_destino):
 
         # Itera sobre os arquivos e move aqueles com extensão '.png' para o diretório de destino
         for file in files:
-            if file.endswith('.png'):
+            if file.endswith('.png') or file.endswith('.docx'):
                 source_path = os.path.join(pasta_origem, file)
                 destination_path = os.path.join(pasta_destino, file)
                 shutil.move(source_path, destination_path)
